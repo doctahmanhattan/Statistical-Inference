@@ -1,0 +1,36 @@
+Author: Zeeshan Kamran
+
+Overview:
+
+This report investigates the properties of the distribution of averages of exponentials using simulations in R and compares it with the Central Limit Theorem. The Central Limit Theorem states that the distribution of the mean of independent and identically distributed (iid) random variables approaches a normal distribution as the sample size increases.
+
+Simulations:
+
+We simulated 1,000 sets of 40 exponential random variables with a rate parameter (lambda) of 0.2. The theoretical mean and variance for the exponential distribution with this lambda are both 5.
+
+Code snippet
+# Set random seed for reproducibility
+set.seed(123)
+
+# Simulate 1000 sets of 40 exponentials with lambda = 0.2
+means <- replicate(1000, mean(rexp(40, 0.2)))
+Use code with caution.
+content_copy
+Sample Mean vs. Theoretical Mean:
+
+The average of the 1,000 sample means is 5.02, which is very close to the theoretical mean of 5. This indicates that the simulation accurately captured the expected center of the distribution.
+
+Sample Variance vs. Theoretical Variance:
+
+The variance of the sample means can be calculated using the variance function. The theoretical variance for the exponential distribution with lambda 0.2 is also 25.
+
+Code snippet
+# Calculate variance of sample means
+var(means)
+Use code with caution.
+content_copy
+The resulting variance will be close to the theoretical value of 25, demonstrating that the simulation reflects the expected variability of the distribution.
+
+Distribution:
+
+A histogram of the 1,000 sample means shows an approximately normal distribution compared to the original exponential distribution of individual values. This visually confirms the Central Limit Theorem, where the sum of many independent random variables tends towards a normal distribution, regardless of the original distribution shape.
