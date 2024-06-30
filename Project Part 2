@@ -1,0 +1,66 @@
+Part 2: Basic Inferential Data Analysis of ToothGrowth Data
+Data Exploration and Summary:
+
+We will use the ToothGrowth dataset available in the datasets package.
+
+Code snippet
+library(datasets)
+data("ToothGrowth")
+
+# Summary of the data
+summary(ToothGrowth)
+Use code with caution.
+content_copy
+The summary provides basic statistics for each variable: mean, median, minimum, maximum, and quartiles. We can see there is some variation in tooth length (len) across different supplement types (supp) and dose levels (dose).
+
+Exploratory Data Analysis:
+
+A boxplot can be used to visualize the distribution of tooth length by supplement type.
+
+Code snippet
+library(ggplot2)
+
+ggplot(ToothGrowth, aes(x = supp, y = len)) +
+  geom_boxplot() +
+  labs(title = "Tooth Length by Supplement", x = "Supplement", y = "Length (mm)")
+Use code with caution.
+content_copy
+The boxplot might reveal potential differences in median tooth length between the two supplement types (Vitamin C - VC and Orange Juice - OJ).
+
+Comparing Tooth Growth by Supplement and Dose:
+
+We can use t-tests to compare tooth growth between supplement types for each dose level and vice versa. It's important to check for normality and homoscedasticity of variances before applying t-tests.
+
+Code snippet
+# Check normality (e.g., Shapiro-Wilk test)
+shapiro.test(ToothGrowth$len[ToothGrowth$supp == "VC"])
+shapiro.test(ToothGrowth$len[ToothGrowth$supp == "OJ"])
+
+# Check homoscedasticity (e.g., Bartlett test)
+bartlett.test(ToothGrowth$len ~ ToothGrowth$supp)
+Use code with caution.
+content_copy
+Based on the normality and homoscedasticity tests, we can decide whether to proceed with parametric (t-tests) or non-parametric tests.
+
+Here's a general approach for t-tests:
+
+Code snippet
+# Compare tooth growth by supplement for each dose level (assuming normality and homoscedasticity)
+t.test(ToothGrowth$len ~ ToothGrowth$supp, subset = ToothGrowth$dose == 0.5)
+t.test(ToothGrowth$len ~ ToothGrowth$supp, subset = ToothGrowth$dose == 1.0)
+t.test(ToothGrowth$len ~ ToothGrowth$supp, subset = ToothGrowth$dose == 2.0)
+
+# Compare tooth growth by dose level for each supplement type (assuming normality and homoscedasticity)
+t.test(ToothGrowth$len ~ ToothGrowth$dose, subset = ToothGrowth$supp == "VC")
+t.test(ToothGrowth$len ~ ToothGrowth$dose, subset = ToothGrowth$supp == "OJ")
+Use code with caution.
+content_copy
+Interpretation and Conclusions:
+
+Interpret the p-values from the t-tests to draw conclusions about statistically significant differences in tooth growth between supplement types and dose levels. Consider the limitations of the chosen tests and the assumptions made (normality, homoscedasticity).
+
+Future Considerations:
+
+Depending on the results, further analysis might be needed, such as post-hoc tests to identify specific group differences or exploring alternative approaches if the assumptions for t-tests are not met.
+
+Note: This response provides a general framework for analyzing the ToothGrowth data. The specific code and interpretations will depend on the results of the normality and homoscedasticity tests.
