@@ -23,44 +23,88 @@ library(ggplot2)
 ggplot(ToothGrowth, aes(x = supp, y = len)) +
   geom_boxplot() +
   labs(title = "Tooth Length by Supplement", x = "Supplement", y = "Length (mm)")
-Use code with caution.
-content_copy
+
+
 The boxplot might reveal potential differences in median tooth length between the two supplement types (Vitamin C - VC and Orange Juice - OJ).
 
 Comparing Tooth Growth by Supplement and Dose:
 
-We can use t-tests to compare tooth growth between supplement types for each dose level and vice versa. It's important to check for normality and homoscedasticity of variances before applying t-tests.
+Visual Inspection: We can create histograms or density plots for tooth length within each group (defined by supplement type and dose level) to get a sense of the distribution shape. Marked skewness or presence of outliers might suggest non-normality.
+Code snippet
+ggplot(ToothGrowth, aes(x = len, color = supp)) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(~dose) +
+  labs(title = "Distribution of Tooth Length by Supplement and Dose", x = "Length (mm)", y = "Density")
+
+This code creates a density plot with separate panels for each dose level. We can visually assess if the distributions within each group appear symmetrical and unimodal, suggesting normality.
+
+QQ-Plots:  We can create quantile-quantile (QQ) plots for tooth length within each group. These plots compare the observed quantiles of the data to the expected quantiles of a normal distribution. A straight line suggests normality, while deviations indicate departures from normality.
+
+QQ-Plots for Normality Assessment:
 
 Code snippet
-# Check normality (e.g., Shapiro-Wilk test)
-shapiro.test(ToothGrowth$len[ToothGrowth$supp == "VC"])
-shapiro.test(ToothGrowth$len[ToothGrowth$supp == "OJ"])
+library(car)
 
-# Check homoscedasticity (e.g., Bartlett test)
-bartlett.test(ToothGrowth$len ~ ToothGrowth$supp)
-Use code with caution.
-content_copy
-Based on the normality and homoscedasticity tests, we can decide whether to proceed with parametric (t-tests) or non-parametric tests.
+# Example QQ-plot for VC supplement at 0.5mg dose
+qqnorm(ToothGrowth$len[ToothGrowth$supp == "VC" & ToothGrowth$dose == 0.5])
+qqline(ToothGrowth$len[ToothGrowth$supp == "VC" & ToothGrowth$dose == 0.5])
 
-Here's a general approach for t-tests:
+Repeat the above for other groups (supplements and doses). Significant deviations from the straight line might indicate non-normality.
+Normality Tests: 
+
+Anderson-Darling Test: This test might be more powerful for certain types of non-normality compared to Shapiro-Wilk.
+D'Agostino-Pearson Test: This omnibus test combines skewness and kurtosis measures to assess normality.
+Based on these explorations, we can decide whether to proceed with parametric (t-tests) or non-parametric tests for comparisons.
+Alternative Normality Tests (Optional):
 
 Code snippet
-# Compare tooth growth by supplement for each dose level (assuming normality and homoscedasticity)
+library(nortest)
+
+# Example Anderson-Darling test for VC supplement at 0.5mg dose
+ad.test(ToothGrowth$len[ToothGrowth$supp == "VC" & ToothGrowth$dose == 0.5])
+
+# Example D'Agostino-Pearson test for VC supplement at 0.5mg dose
+ks.test(ToothGrowth$len[ToothGrowth$supp == "VC" & ToothGrowth$dose == 0.5], "normal")
+
+Use the results of these tests alongside visual inspection and QQ-plots to reach a conclusion about normality for each group.
+
+Choosing Statistical Tests:
+
+Based on the normality assessment, you can decide on the appropriate statistical tests:
+
+Parametric Tests (t-tests) if normality is assumed: Proceed with the t-tests mentioned earlier to compare tooth growth between supplement types and dose levels.
+Non-parametric Tests (Wilcoxon signed-rank test) if normality is not assumed: Use the Wilcoxon signed-rank tests to compare groups.
+Here's a general approach for comparing groups:
+
+Parametric Tests (if normality is assumed):
+
+Code snippet
+# t-tests for supplement type within each dose level
 t.test(ToothGrowth$len ~ ToothGrowth$supp, subset = ToothGrowth$dose == 0.5)
 t.test(ToothGrowth$len ~ ToothGrowth$supp, subset = ToothGrowth$dose == 1.0)
 t.test(ToothGrowth$len ~ ToothGrowth$supp, subset = ToothGrowth$dose == 2.0)
 
-# Compare tooth growth by dose level for each supplement type (assuming normality and homoscedasticity)
+# t-tests for dose level within each supplement type
 t.test(ToothGrowth$len ~ ToothGrowth$dose, subset = ToothGrowth$supp == "VC")
 t.test(ToothGrowth$len ~ ToothGrowth$dose, subset = ToothGrowth$supp == "OJ")
-Use code with caution.
-content_copy
+
+Non-parametric Tests (if normality is not assumed):
+
+Code snippet
+# Wilcoxon signed-rank test for supplement type within each dose level
+wilcox.test(ToothGrowth$len ~ ToothGrowth$supp, paired = FALSE, subset = ToothGrowth$dose == 0.5)
+wilcox.test(ToothGrowth$len ~ ToothGrowth$supp, paired = FALSE, subset = ToothGrowth$dose == 1.0)
+wilcox.test(ToothGrowth$len ~ ToothGrowth$supp, paired = FALSE, subset = ToothGrowth$dose == 2.0)
+
+# Wilcoxon signed-rank test for dose level within each supplement type
+wilcox.test(ToothGrowth$len ~ ToothGrowth$dose, paired = FALSE, subset = ToothGrowth$supp == "VC")
+wilcox.test(ToothGrowth$len ~ ToothGrowth$dose, paired = FALSE, subset = ToothGrowth$supp == "OJ")
+
 Interpretation and Conclusions:
 
-Interpret the p-values from the t-tests to draw conclusions about statistically significant differences in tooth growth between supplement types and dose levels. Consider the limitations of the chosen tests and the assumptions made (normality, homoscedasticity).
+Interpret the p-values from the chosen tests (parametric or non-parametric) to draw conclusions about statistically significant differences in tooth growth between supplement types and dose levels. Consider the limitations of the chosen tests and the assumptions made (normality for parametric tests).
 
 Future Considerations:
 
-Depending on the results, further analysis might be needed, such as post-hoc tests to identify specific group differences or exploring alternative approaches if the assumptions for t-tests are not met.
-
-Note: This response provides a general framework for analyzing the ToothGrowth data. The specific code and interpretations will depend on the results of the normality and homoscedasticity tests.
+Depending on the results, further analysis might be needed, such as post-hoc tests to identify specific group differences or exploring transformations if non-normality persists and parametric tests are preferred. Consider post-hoc tests (e.g., Dunn's test) to identify specific group differences if non-parametric tests were used.
+Explore data transformations (e.g., log transformation) if non-normality persists and parametric tests are preferred.
