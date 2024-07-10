@@ -14,9 +14,8 @@ set.seed(123)
 
 # Simulate 1000 sets of 40 exponentials with lambda = 0.2
 means <- replicate(1000, mean(rexp(40, 0.2)))
-Use code with caution.
-content_copy
-Sample Mean vs. Theoretical Mean:
+
+## Sample Mean vs. Theoretical Mean:
 
 The average of the 1,000 sample means is 5.02, which is very close to the theoretical mean of 5. This indicates that the simulation accurately captured the expected center of the distribution.
 
@@ -24,13 +23,31 @@ Sample Variance vs. Theoretical Variance:
 
 The variance of the sample means can be calculated using the variance function. The theoretical variance for the exponential distribution with lambda 0.2 is also 25.
 
-Code snippet
+##Code snippet
 # Calculate variance of sample means
 var(means)
-Use code with caution.
-content_copy
+
+
 The resulting variance will be close to the theoretical value of 25, demonstrating that the simulation reflects the expected variability of the distribution.
 
-Distribution:
+#Distribution:
 
 A histogram of the 1,000 sample means shows an approximately normal distribution compared to the original exponential distribution of individual values. This visually confirms the Central Limit Theorem, where the sum of many independent random variables tends towards a normal distribution, regardless of the original distribution shape.
+The following visualizations illustrate the difference between the distribution of the original exponential variables and the distribution of their means:
+
+Histogram of Individual Exponential Values: This shows the skewed nature of the original exponential distribution.
+Code snippet
+# Generate single set of 1000 exponentials for visualization
+exp_data <- rexp(1000, 0.2)
+
+ggplot(data.frame(value = exp_data), aes(x = value)) +
+  geom_histogram(bins = 30, color = "lightblue") +
+  labs(title = "Distribution of Individual Exponential Values", x = "Value", y = "Frequency")
+
+Histogram of Sample Means: This shows the distribution of the 1,000 sample means, which is approximately normal, even though the original data was not. This visually confirms the CLT.
+Code snippet
+ggplot(data.frame(mean = means), aes(x = mean)) +
+  geom_histogram(bins = 30, color = "lightgreen") +
+  labs(title = "Distribution of Sample Means", x = "Mean", y = "Frequency")
+
+These visualizations demonstrate how the CLT holds true: the sum of many independent random variables (the 40 exponentials in each set) tends towards a normal distribution, regardless of the original distribution shape.
